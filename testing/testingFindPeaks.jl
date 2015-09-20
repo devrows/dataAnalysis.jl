@@ -9,7 +9,7 @@ Testing file, testing for the following functions (Data analysis functions)
 #=**************************************
 Initial parameters that will be declared in an example file or passed to the function as an argument
 **************************************=#
-using ChemCamAnalysis
+using dataAnalysis
 fileName = "CL5_461315707rdr_f0401286ccam01719p3.csv"
 
 csvArray = importFile(fileName)

@@ -5,7 +5,7 @@ Example file that will call functions for a proper analysis of peak data
 """
 
 #Initial parameters
-using Gadfly, chemCamAnalysis
+using Gadfly, dataAnalysis
 fileName = "CL5_461315707rdr_f0401286ccam01719p3.csv"
 
 #functions called
