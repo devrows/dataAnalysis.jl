@@ -1,0 +1,29 @@
+"""
+Physics Research Project
+Devin Rose
+Testing information, this text document contains information on the testing files
+"""
+
+***************
+testingUtilities.jl
+***************
+
+Testing topics,
+- Importing file
+- Plotting
+
+The following functions were tested,
+- importFile(fileName::ASCIIString)
+- parseArray(csvArray::Array)
+- plotMeanValues(csvArray::Array, fileName::ASCIIString)
+
+***************
+testingFindPeaks.jl
+***************
+
+Testing topics,
+- Find Average
+- Find number of peaks
+- Find total peaks
+
+The following functions were tested,
