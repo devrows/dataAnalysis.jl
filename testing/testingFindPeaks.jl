@@ -18,6 +18,36 @@ parsedArray = parseArray(csvArray)
 #=**************************************=#
 
 
+
+
+#=
+function findError(parsedArray::Array, mean::Float64)
+=#
+
+errorIntervals = Array(Float64, 1, 1)
+errorIntervals[1,1] = 1
+
+#find bounds error
+for i = 2:size(parsedArray)[1]
+  if parsedArray[2,i] < mean && parsedArray[2,i-1] > mean
+    #create a new array to add to the end of the array
+    elementToAdd = Array(Float64, 1, 1)
+    elementToAdd[1,1] = parsedArray[2,i]
+
+    #vertically concatenate the array
+    errorIntervals = vcat(errorIntervals, elementToAdd)
+  end
+end
+
+
+
+#=
+return totalPeaks
+=#
+
+
+
+
 #=
 function findMean(parsedArray::Array)
 =#

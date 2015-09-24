@@ -16,7 +16,8 @@ function importFile(fileName::ASCIIString)
   fileLocation = Base.source_path()
 
   #Parses string, moves to docs directory, reads the files in the docs directory
-  cd(split(fileLocation, "researchProject")[1]"researchProject/docs/")
+  cd()
+  cd(split(fileLocation, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/")
   readdir()
 
   #loop to search for fileName
@@ -37,7 +38,7 @@ function importFile(fileName::ASCIIString)
   end
 
   #Reads the table into a Vector
-  fileLocation = split(fileLocation, "researchProject")[1]"researchProject/docs/"fileName
+  fileLocation = split(fileLocation, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/"fileName
   csvArray = readdlm(fileLocation, ',', Float64)
 
   return csvArray
