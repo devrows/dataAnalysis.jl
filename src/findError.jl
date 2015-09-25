@@ -101,6 +101,5 @@ function findMean(parsedArray::Array)
   end
 
   meanOfAllData = totalSum/n
-
-
-return meanOfAllData
+  return meanOfAllData
+end

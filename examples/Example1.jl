@@ -14,3 +14,10 @@ csvArray = importFile(fileName)
 parsedArray = parseArray(csvArray)
 
 plot = plotMeanValues(parsedArray, fileName)
+
+calculatedMean = findMean(parsedArray)
+
+areasOfLowValues = errorIntervals(parsedArray, calculatedMean)
+
+minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
+
