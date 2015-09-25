@@ -17,7 +17,7 @@ plot = plotMeanValues(parsedArray, fileName)
 
 calculatedMean = findMean(parsedArray)
 
-areasOfLowValues = errorIntervals(parsedArray, calculatedMean)
+areaOfLowValues = errorIntervals(parsedArray, calculatedMean)
 
 minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
 

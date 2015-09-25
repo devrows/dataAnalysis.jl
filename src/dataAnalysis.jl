@@ -14,7 +14,7 @@ using Gadfly
 
 export
   #findError.jl
-  calculateMinimumBackgroundError,
+  calculateBackgroundMinimumError,
   errorIntervals,
   findMean,
 
