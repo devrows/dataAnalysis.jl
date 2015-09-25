@@ -4,26 +4,25 @@ Devin Rose
 Defines module for using as a package
 """
 
-#List packages used
-#export functions with return values
-#List files with functions used
-
 module dataAnalysis
 
-using Gadfly
+  #List packages used
+  using Gadfly
 
-export
-  #findError.jl
-  calculateBackgroundMinimumError,
-  errorIntervals,
-  findMean,
+  #export functions used in the module
+  export
+    #findError.jl
+    calculateBackgroundMinimumError,
+    errorIntervals,
+    findMean,
 
-  #utilities.jl
-  importFile,
-  parseArray,
-  plotMeanValues
+    #utilities.jl
+    importFile,
+    parseArray,
+    plotMeanValues
 
-include("findError.jl")
-include("utilities.jl")
+  #List files containing functions
+  include("findError.jl")
+  include("utilities.jl")
 
 end
