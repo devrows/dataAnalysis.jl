@@ -56,7 +56,7 @@ function parseArray(arrayFromFile::Array)
 
   #setting all values in one column
   for i = 1:size(arrayFromFile)[1]
-    parsedArray[i,1] = i
+    parsedArray[i,1] = arrayFromFile[i,1]
   end
 
   return parsedArray

@@ -20,55 +20,31 @@ parsedArray = parseArray(csvArray)
 
 
 
-#It might be beneficial to only consider intervals that are not at the end.
 #=
-function calculateBackgroundError(errorIntervals::Array, parsedArray::Array)
+function findMean(parsedArray::Array)
 =#
 
-largestInterval = Array(Float64, 1, 3)
-largestInterval[1,:] = 0
+#initialize variables
+n = size(parsedArray)[1]
+totalSum = 0
 
-#find bounds error later
-for i = 1:size(errorIntervals)[1]
-
-  errorCheck = errorIntervals[i,2] - errorIntervals[i, 1]
-
-  #checks to see if it is the largest interval
-  if errorCheck > largestInterval[1,1]
-    largestInterval[1,1] = errorCheck
-    largestInterval[1,2] = errorIntervals[i,1]
-    largestInterval[1,3] = errorIntervals[i,2]
+if n > 0
+  for i = 1:n
+    totalSum += parsedArray[i,2]
   end
+else
+  print("ERROR: sample size is less than one, now exiting with error code $n \n")
+  #=
+  return n
+  =#
 end
 
-#largestInterval
-
-
-errorSum = 0
-for j = largestInterval[1,2]:largestInterval[1,3]
-  errorSum += parsedArray[j,2]
-end
-
-backgroundError = errorSum/largestInterval[1,1]
+meanOfAllData = totalSum/n
 
 #=
-return backgroundError
+return mean
 =#
 
-
-
-#=
-function "generateErrorFunction()"
-=#
-
-
-
-
-
-
-#=
-return errorFunction
-=#
 
 
 
@@ -123,32 +99,71 @@ return errorIntervals
 
 
 
-
-
+#It might be beneficial to only consider intervals that are not at the end.
 #=
-function findMean(parsedArray::Array)
+function calculateBackgroundError(errorIntervals::Array, parsedArray::Array)
 =#
 
-#initialize variables
-n = size(parsedArray)[1]
-totalSum = 0
+largestInterval = Array(Float64, 1, 3)
+largestInterval[1,:] = 0
 
-if n > 0
-  for i = 1:n
-    totalSum += parsedArray[i,2]
+#find bounds error later
+for i = 1:size(errorIntervals)[1]
+
+  errorCheck = errorIntervals[i,2] - errorIntervals[i, 1]
+
+  #checks to see if it is the largest interval
+  if errorCheck > largestInterval[1,1]
+    largestInterval[1,1] = errorCheck
+    largestInterval[1,2] = errorIntervals[i,1]
+    largestInterval[1,3] = errorIntervals[i,2]
   end
-else
-  print("ERROR: sample size is less than one, now exiting with error code $n \n")
-  #=
-  return n
-  =#
 end
 
-meanOfAllData = totalSum/n
+#largestInterval
+
+
+errorSum = 0
+for j = largestInterval[1,2]:largestInterval[1,3]
+  errorSum += parsedArray[j,2]
+end
+
+backgroundError = errorSum/largestInterval[1,1]
 
 #=
-return mean
+return backgroundError
 =#
+
+
+
+#=
+function "generateErrorFunction()"
+=#
+
+
+
+
+
+
+#=
+return errorFunction
+=#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
