@@ -101,7 +101,7 @@ return errorIntervals
 
 #It might be beneficial to only consider intervals that are not at the end.
 #=
-function calculateBackgroundError(errorIntervals::Array, parsedArray::Array)
+function calculateBackgroundMinimumError(errorIntervals::Array, parsedArray::Array)
 =#
 
 largestInterval = Array(Float64, 1, 3)
