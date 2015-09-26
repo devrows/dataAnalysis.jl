@@ -19,7 +19,8 @@ module dataAnalysis
     #utilities.jl
     importFile,
     parseArray,
-    plotMeanValues
+    plotMeanValues,
+    wavelengthDifferetial
 
   #List files containing functions
   include("findError.jl")

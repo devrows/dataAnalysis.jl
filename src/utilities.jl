@@ -107,10 +107,23 @@ function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString)
 
   plotName = "Plot_of_$fileName.png"
 
+  #Write out the plot as a .png file
   #draw(PNG(plotName, 4inch, 3inch), myPlot)
 
   return myPlot
 end
 
+function wavelengthDifferetial(reducedArray::Array)
+  """
+  Returns an array of the smallest and largest wavelength
+  """
+  #Allocate memory for the array
+  waveMaxAndMin = Array(Float64, 1, 2)
+  arrayLength = size(reducedArray)[1]
 
+  waveMaxAndMin[1,1] = reducedArray[1,1]
+  waveMaxAndMin[1,2] = reducedArray[arrayLength, 1]
+
+  return waveMaxAndMin
+end
 

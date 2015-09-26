@@ -21,3 +21,5 @@ areaOfLowValues = errorIntervals(parsedArray, calculatedMean)
 
 minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
 
+maxAndMinWavelength = wavelengthDifferetial(parsedArray)
+
