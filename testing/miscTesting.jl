@@ -20,3 +20,4 @@ areaOfLowValues = errorIntervals(parsedArray, calculatedMean)
 minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
 #=**************************************=#
 
+
