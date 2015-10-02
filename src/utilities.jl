@@ -10,6 +10,7 @@ function areaUnderCurveCentral(localArray::Array)
   """
 
   areaUnderCurve = Array(Float64, size(localArray)[2]-2, 2)
+  areaUnderCurve[:,:] = 0
 
   #column 1 is the shot number
   for i = 1:size(areaUnderCurve)[1]
@@ -25,7 +26,7 @@ function areaUnderCurveCentral(localArray::Array)
       width = endingWidth - startingWidth
       length = localArray[localRow, localColumn]
 
-      areaUnderCurve [localColumn-1, 2] = length*width
+      areaUnderCurve [localColumn-1, 2] += length*width
     end
   end
 
@@ -39,6 +40,7 @@ function areaUnderCurveRightSum(localArray::Array)
   Riemann sum, using the right handed method
   """
   areaUnderCurve = Array(Float64, size(localArray)[2]-2, 2)
+  areaUnderCurve[:,:] = 0
 
   #column 1 is the shot number
   for i = 1:size(areaUnderCurve)[1]
@@ -51,7 +53,7 @@ function areaUnderCurveRightSum(localArray::Array)
       width = localArray[localRow+1,1] - localArray[localRow,1]
       length = localArray[localRow, localColumn]
 
-      areaUnderCurve [localColumn-1, 2] = length*width
+      areaUnderCurve [localColumn-1, 2] += length*width
     end
   end
 
