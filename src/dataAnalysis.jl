@@ -1,6 +1,7 @@
 """
 Physics Research Project
 Devin Rose
+Last update: October 1, 2015
 Defines module for using as a package
 """
 
@@ -17,7 +18,13 @@ module dataAnalysis
     findMean,
 
     #utilities.jl
+    areaUnderCurveCentral,
+    areaUnderCurveRightSum,
+    arrayLayers,
+    findClosestMax,
+    findWaveRow,
     importFile,
+    layerPlots,
     parseArray,
     plotMeanValues,
     wavelengthDifferetial
