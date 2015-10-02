@@ -13,8 +13,10 @@ module dataAnalysis
   #export functions used in the module
   export
     #fileIO.jl
+    createDirectoryForReport,
     findFilesToAnalyze,
     importFile,
+    writeOutPlot,
 
     #findError.jl
     calculateBackgroundMinimumError,

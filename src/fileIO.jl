@@ -5,6 +5,38 @@ Contains functions to write out, and import files
 """
 
 
+function createDirectoryForReport(fileName::ASCIIString)
+  """
+  Creates a directory for the report
+  """
+
+  #Get to the reports directory
+  currentPath = Base.source_path()
+  cd()
+  cd(split(currentPath, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/reports")
+
+  filesInDirectory = readdir()
+  dirCheck = false
+
+  #searches files
+  for i = 1:length(filesInDirectory)
+    if fileName == filesInDirectory[i]
+      dirCheck = true
+    end
+  end
+
+  #reports the status about the directory
+  if dirCheck == false
+    mkdir(fileName)
+    print("Successfully created a directory created in: ")
+    print(pwd())
+    print("\n")
+  else
+    print("Successfully found directory \n")
+  end
+end
+
+
 function findFilesToAnalyze()
   """
   Add description
@@ -15,10 +47,12 @@ function findFilesToAnalyze()
   cd()
   cd(split(filePath, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/dataToAnalyze")
 
-  fileNames = readdir()
+  allFiles = readdir()
 
-  return fileNames
+
+  return allFiles
 end
+
 
 
 #Importing the .csv file as an array
@@ -60,4 +94,8 @@ function importFile(fileName::ASCIIString)
 
   return csvArray
 end
+
+#function writeOutPlot(fileName::ASCIIString, plotType::ASCIIString, plotToWriteOut::Plot)
+
+
 

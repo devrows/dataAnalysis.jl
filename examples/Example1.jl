@@ -1,7 +1,8 @@
 """
 Physics Research Project
 Devin Rose
-Example file that will call functions for a proper analysis of peak data
+Example file that will call functions for a proper analysis of peak data.
+Once a full analysis has been completed with all tools developed, a fullAnalysis() function will be written to do all of the work.
 """
 
 #Initial parameters
@@ -12,6 +13,7 @@ fileName = allFiles[1]
 
 
 #functions called
+createDirectoryForReport(fileName)
 csvArray = importFile(fileName)
 parsedArray = parseArray(csvArray)
 
