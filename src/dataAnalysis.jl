@@ -12,10 +12,13 @@ module dataAnalysis
 
   #export functions used in the module
   export
+    #fileIO.jl
+    findFilesToAnalyze,
+    importFile,
+
     #findError.jl
     calculateBackgroundMinimumError,
     errorIntervals,
-    findMean,
 
     #utilities.jl
     areaUnderCurveCentral,
@@ -23,14 +26,19 @@ module dataAnalysis
     arrayLayers,
     findClosestMax,
     findWaveRow,
-    importFile,
     layerPlots,
     parseArray,
     plotMeanValues,
-    wavelengthDifferetial
+    wavelengthDifferetial,
+
+    #vectorStats.jl
+    vectorMean,
+    vectorStandardDeviation
+
 
   #List files containing functions
+  include("fileIO.jl")
   include("findError.jl")
   include("utilities.jl")
-
+  include("vectorStats.jl")
 end

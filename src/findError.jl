@@ -77,26 +77,3 @@ Finds the intervals of values that are below the mean of the entire data
 end
 
 
-
-
-function findMean(parsedArray::Array)
-  """
-  Find the mean of all values in the data
-  """
-  #initialize variables
-  n = size(parsedArray)[1]
-  totalSum = 0
-
-  if n > 0
-    for i = 1:n
-      totalSum += parsedArray[i,2]
-    end
-  else
-    print("ERROR: sample size is less than one, now exiting with error code $n \n")
-
-  #return n
-  end
-
-  meanOfAllData = totalSum/n
-  return meanOfAllData
-end
