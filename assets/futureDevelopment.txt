@@ -1,0 +1,10 @@
+"""
+Physics Research Project
+Devin Rose
+Text file containing future plans for the project
+"""
+
+An informal to do list for future development,
+
+- Defensively program for random files in filesToAnalyze
+- Write script for downloading all .csvFiles

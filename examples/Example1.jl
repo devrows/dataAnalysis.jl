@@ -2,19 +2,23 @@
 Physics Research Project
 Devin Rose
 Example file that will call functions for a proper analysis of peak data.
-Once a full analysis has been completed with all tools developed, a fullAnalysis() function will be written to do all of the work.
+Once a full analysis has been completed with all tools developed, a fullAnalysis() function will be written from the Example1.jl skeleton.
 """
 
 #Initial parameters
 using Gadfly, dataAnalysis
 
 allFiles = findFilesToAnalyze()
+#Add progress bar
+#for all possible files
 fileName = allFiles[1]
 
 
-#functions called
-createDirectoryForReport(fileName)
+#initial functions called
 csvArray = importFile(fileName)
+
+#if(csvArray != null)
+createDirectoryForReport(fileName)
 parsedArray = parseArray(csvArray)
 
 #not yet needed
@@ -60,6 +64,9 @@ waveTwo = csvArray[peakTwo,1]
 Gadfly.plot(x = areasRightTwo[:,1], y =areasRightTwo[:,2], Geom.line,
                     Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"), Guide.title("Area under the peak over time (wavelength = $waveTwo)"))
 
+#else print "couldn't open file name"
+#end for
 
+#open results directory with new files
 
 
