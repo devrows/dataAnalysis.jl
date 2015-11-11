@@ -28,17 +28,19 @@ minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
 maxAndMinWavelength = wavelengthDifferetial(parsedArray)
 
 #find row for wavelength
-wavelengthOne = 289.9785
+#OI = oxygen one
+wavelengthOI = 777.5388
 wavelengthTwo = 337.2671
 meanColumn = size(csvArray)[2]
 
 #example one, use example two
-rowOne = findWaveRow(wavelengthOne, csvArray)
-peakOne = findClosestMax(rowOne, meanColumn, csvArray)
-localArrayOne = arrayLayers(peakOne, meanColumn, 5, csvArray)
-areasCentreOne = areaUnderCurveCentral(localArrayOne)
-areasRightOne = areaUnderCurveRightSum(localArrayOne)
-areaDeviationOne = vectorStandardDeviation(areasRightOne[:,2])
+rowOI = findWaveRow(wavelengthOI, csvArray)
+peakOI = findClosestMax(rowOI, meanColumn, csvArray)
+#Change localArray to report local until finding the first local min
+localArrayOI = arrayLayers(peakOI, meanColumn, 5, csvArray)
+areasCentreOI = areaUnderCurveCentral(localArrayOI)
+areasRightOI = areaUnderCurveRightSum(localArrayOI)
+areaDeviationOI = vectorStandardDeviation(localArrayOI[:,1])
 
 #example two, run this code
 rowTwo = findWaveRow(wavelengthTwo, csvArray)
@@ -46,115 +48,148 @@ peakTwo = findClosestMax(rowTwo, meanColumn, csvArray)
 localArrayTwo = arrayLayers(peakTwo, meanColumn, 5, csvArray)
 areasCentreTwo = areaUnderCurveCentral(localArrayTwo)
 areasRightTwo = areaUnderCurveRightSum(localArrayTwo)
-areaDeviationTwo = vectorStandardDeviation(areasRightTwo[:,2])
-
-#plots
-plot = plotMeanValues(parsedArray, fileName)
-
-#plots one
-plotOne = layerPlots(localArrayOne)
-waveOne = csvArray[peakOne,1]
-Gadfly.plot(x = areasRightOne[:,1], y =areasRightOne[:,2], Geom.line,
-            Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"),
-            Guide.title("Area under the peak over time (wavelength = $waveOne)"))
-
-#plots two
-plotTwo = layerPlots(localArrayTwo)
-waveTwo = csvArray[peakTwo,1]
-Gadfly.plot(x = areasRightTwo[:,1], y =areasRightTwo[:,2], Geom.line,
-                    Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"), Guide.title("Area under the peak over time (wavelength = $waveTwo)"))
+areaDeviationTwo = vectorStandardDeviation(localArrayTwo[:,1])
 
 
 #Testing area is located below
 using LsqFit
 
-#a = normalization,
-#c = standard deviation
-
 g(x) = (1/(areaDeviationTwo*sqrt(2pi)))exp((-(x-wavelengthTwo)^2)/2areaDeviationTwo^2)
-model(x, a) = a[1]*exp((-(x-a[2])^2)/2c^2)
-
-f(x,a,b,c) = a*exp((-(x-b)^2)/2c^2)
-J1(x,a,b,c) = exp((-(x-b)^2)/2c^2)
-J2(x,a,b,c) = (a*(x-b)/c^2)*exp((-(x-b)^2)/2c^2)
-J3(x,a,b,c) = (a*((x-b)^2)/c^3)*exp((-(x-b)^2)/2c^2)
-
-s1(yi,xi,a,b,c,delta) = (yi-f(xi,a,b,c)-J1(xi,a,b,c)*delta)^2
-s2(yi,xi,a,b,c,delta) = (yi-f(xi,a,b,c)-J2(xi,a,b,c)*delta)^2
-s3(yi,xi,a,b,c,delta) = (yi-f(xi,a,b,c)-J3(xi,a,b,c)*delta)^2
 
 normalization = 1/(areaDeviationTwo*sqrt(2pi))
 
-aGuess = [normalization
-          wavelengthTwo
-          areaDeviationTwo]
+xData = localArrayTwo[:,1]
+yData = localArrayTwo[:,6]
 
-a = normalization
-b = wavelengthTwo
-c = areaDeviationOne
+xOIData = localArrayOI[:,1]
+yOIData = localArrayOI[:,6]
 
-x = localArrayTwo[:,size(localArrayTwo)[1]]
-y = localArrayTwo[:,size(localArrayTwo)[2]]
+stdDev = vectorStandardDeviation(xData)
+stdDevOI = vectorStandardDeviation(xOIData)
 
+peakMax = 0
+peakOIMax = 0
 
+globalMax = 0
 
-curve_fit(model, x, y, aGuess)
-
-#start with delta = 0
-delta = 0
-sumOfSquares1Init = 0
-sumOfSquares2Init = 0
-sumOfSquares3Init = 0
-
-
-
-#for the first point
-for i = 1:length(x)
-  sumOfSquares1Init += s1(y[i],x[i],a,b,c,delta)
-end
-
-s2(y[1],x[1],a,b,c,delta)
-
-for i = 1:length(x)
-  sumOfSquares2Init += s2(y[i],x[i],a,b,c,delta)
-end
-
-for i = 1:length(x)
-  sumOfSquares3Init += s3(y[i],x[i],a,b,c,delta)
-end
-
-deltaOne = 0
-deltaTwo = 0
-deltaThree = 0
-sumOfSquares1Final = 0
-
-
-#upwards
-while (sumOfSquares1Init < sumOfSquares1Final) && (checkOne < 500)
-  while (sumOfSquares2Init < sumOfSquares2Final) && (checkOne < 500)
-    sumOfSquares2Init = sumOfSquares2Final
-    while (sumOfSquares3Init < sumOfSquares3Final) && (checkOne < 500)
-      sumOfSquares3Init = sumOfSquares3Final
-      sumOfSquares3Final = 0
-      for i = 1:length(x)
-        sumOfSquares3Final += s3(y[i],x[i],a,b,c,deltaThree)
-      end
-      deltaThree += 0.001
-      checkThree += 1
-    end
-    sumOfSquares2Final = 0
-    for i = 1:length(x)
-      sumOfSquares2Final += s2(y[i],x[i],a,b,c,deltaTwo)
-    end
-    deltaTwo += 0.001
-    checkTwo += 1
+for j = 1:length(yData)
+  if peakOIMax < yOIData[j]
+    peakOIMax = yOIData[j]
   end
-  sumOfSquares1Final = 0
-  for i = 1:length(x)
-    sumOfSquares1Final += s1(y[i],x[i],a,b,c,deltaOne)
+
+  if peakMax < yData[j]
+    peakMax = yData[j]
   end
-  deltaThree+=0.001
-  checkOne += 1
-  sumOfSquares1Init = sumOfSquares1Final
 end
 
+for k = 1:size(csvArray)[1]
+  if globalMax < csvArray[k, size(csvArray)[2]]
+    globalMax = k
+  end
+end
+
+maximumWavelength = csvArray[globalMax, 1]
+
+aGuess = [peakMax, csvArray[peakTwo,1], 0.07]
+guessOI = [peakOIMax, csvArray[peakOI,1], stdDevOI]
+
+#Gaussian function
+workingModel(x, p) = p[1]*exp(-abs(x-p[2])/(2*(p[3]^2)))
+model(x, p) = p[1]*exp(-abs(x-p[2])/(2*(p[3]^2)))
+modelOI(x, p) = p[1]*exp(-((abs(csvArray[peakOI,1]*x)-x*p[2]+p[2]^2))/(2*(p[3]^2)))
+
+fit = curve_fit(model, xData, yData, aGuess)
+fitOI = curve_fit(modelOI, xOIData, yOIData, guessOI)
+
+fit.dof
+fit.param
+fit.resid
+fit.jacobian
+
+fitOi
+
+curveResults = Array(Float64, length(yData))
+modelResults = Array(Float64, length(yData))
+
+curveResultsOI = Array(Float64, length(yData))
+modelResultsOI = Array(Float64, length(yData))
+
+for i = 1:length(yData)
+  curveResults[i] = model(xData[i], fit.param)
+  modelResults[i] = model(xData[i], aGuess)
+
+  curveResultsOI[i] = model(xOIData[i], fitOI.param)
+  modelResultsOI[i] = model(xOIData[i], guessOI)
+end
+
+curveResults
+
+#plots two
+fitLayer = layer(x = xData, y = curveResults, Geom.smooth)
+dataLayer = layer(x = xData, y = yData, Geom.point)
+modelLayer = layer(x = xData, y = modelResults, Geom.smooth)
+
+plot(dataLayer, fitLayer,
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+plot(layer(x = xData, y = fit.resid, Geom.smooth),
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+
+
+#Plots O I
+fitLayerOI = layer(x = xOIData, y = curveResultsOI, Geom.smooth)
+dataLayerOI = layer(x = xOIData, y = yOIData, Geom.point)
+modelLayerOI = layer(x = xOIData, y = modelResultsOI, Geom.smooth)
+
+plot(dataLayerOI, fitLayerOI,
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+plot(layer(x = xOIData, y = fitOI.resid, Geom.smooth),
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#Lorentzian Function
+
+L(x)=1/pi(1/2Gamma)/((x-x_0)^2+(1/2Gamma)^2),
+
+curveResultsAll = Array(Float64, length(yData))
+
+for i = 1:length(yData)
+  curveResultsAll[i] = model(xData[i], fit.param)
+end
+
+fitLayerAll = layer(x = xData, y = curveResultsAll, Geom.smooth)
+
+dataLayerAll = layer(x = xData, y = yData, Geom.point)
+
+plot(fitLayerAll, dataLayerAll,
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+modelAll(337.2,fitAll.param)
+modelAll(337.2,guessAll)
+
+model(337.2,fit.param)
+model(337.2, aGuess)
+
+plot(layer(x = xData, y = fitAll.resid, Geom.smooth),
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+
+
+
+
+
+fitAll = curve_fit(modelAll, xData, yData, guessAll)
