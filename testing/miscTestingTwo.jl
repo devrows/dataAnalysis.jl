@@ -96,7 +96,7 @@ guessOI = [peakOIMax, csvArray[peakOI,1], stdDevOI]
 #Gaussian function
 workingModel(x, p) = p[1]*exp(-abs(x-p[2])/(2*(p[3]^2)))
 model(x, p) = p[1]*exp(-abs(x-p[2])/(2*(p[3]^2)))
-modelOI(x, p) = p[1]*exp(-((abs(csvArray[peakOI,1]*x)-x*p[2]+p[2]^2))/(2*(p[3]^2)))
+modelOI(x, p) = p[1]*exp(-abs(x-p[2])/(2*(p[3]^2)))
 
 fit = curve_fit(model, xData, yData, aGuess)
 fitOI = curve_fit(modelOI, xOIData, yOIData, guessOI)
@@ -129,11 +129,9 @@ fitLayer = layer(x = xData, y = curveResults, Geom.smooth)
 dataLayer = layer(x = xData, y = yData, Geom.point)
 modelLayer = layer(x = xData, y = modelResults, Geom.smooth)
 
-plot(dataLayer, fitLayer,
-      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
 
-plot(layer(x = xData, y = fit.resid, Geom.smooth),
-      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+
 
 
 
@@ -141,15 +139,6 @@ plot(layer(x = xData, y = fit.resid, Geom.smooth),
 fitLayerOI = layer(x = xOIData, y = curveResultsOI, Geom.smooth)
 dataLayerOI = layer(x = xOIData, y = yOIData, Geom.point)
 modelLayerOI = layer(x = xOIData, y = modelResultsOI, Geom.smooth)
-
-plot(dataLayerOI, fitLayerOI,
-      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
-
-plot(layer(x = xOIData, y = fitOI.resid, Geom.smooth),
-      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
-
-
-
 
 
 
@@ -187,9 +176,95 @@ model(337.2, aGuess)
 plot(layer(x = xData, y = fitAll.resid, Geom.smooth),
       Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
 
-
-
-
-
-
 fitAll = curve_fit(modelAll, xData, yData, guessAll)
+
+
+
+
+
+
+
+
+
+#plots
+
+#mean total spectrum
+meanPlot = plotMeanValues(parsedArray, fileName)
+writeOutPlot(fileName, "meanValuePlot", meanPlot)
+
+
+
+#zoom in on peak
+plotTwo = layerPlots(localArrayTwo)
+writeOutPlot(fileName, "localPeakPlotTwo", plotTwo)
+
+plotOI = layerPlots(localArrayOI)
+writeOutPlot(fileName, "localPeakPlotOI", meanPlot)
+
+
+#area under curve over all shots
+waveTwo = csvArray[peakTwo,1]
+
+areasUnderTwo = Array(Float64, size(areasRightTwo)[1] -1,2)
+
+for i = 1:size(areasRightTwo)[1] -1
+  areasUnderTwo[i,1] = areasRightTwo[i,1]
+  areasUnderTwo[i,2] = areasRightTwo[i,2]
+end
+
+
+areaTwo = Gadfly.plot(x = areasUnderTwo[:,1], y =areasUnderTwo[:,2], Geom.line,
+            Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"),
+            Guide.title("Area under the peak over time (wavelength = $waveTwo)"))
+
+writeOutPlot(fileName, "areaUnderCurveTwo", areaTwo)
+
+
+
+
+
+
+waveOI = csvArray[peakOI,1]
+areasUnderOI = Array(Float64, size(areasRightOI)[1] -1,2)
+
+for i = 1:size(areasRightTwo)[1] -1
+  areasUnderOI[i,1] = areasRightOI[i,1]
+  areasUnderOI[i,2] = areasRightOI[i,2]
+end
+
+areaOI = Gadfly.plot(x = areasRightOI[:,1], y =areasRightOI[:,2], Geom.line,
+                    Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"), Guide.title("Area under the peak over time (wavelength = $waveOI)"))
+
+writeOutPlot(fileName, "areaUnderCurveOI", areaOI)
+
+
+
+
+
+#current curve fitting
+fitPlot = plot(dataLayer, fitLayer,
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+writeOutPlot(fileName, "currentFitTwo", fitPlot)
+
+
+fitOIPlot = plot(dataLayerOI, fitLayerOI,
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+
+writeOutPlot(fileName, "currentFitOI", fitOIPlot)
+
+
+#residual
+fitResidPlotTwo = plot(layer(x = xData, y = fit.resid, Geom.smooth),
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Residual"), Guide.title("Residual from curve fitting results"))
+
+writeOutPlot(fileName, "residualTwo", fitResidPlotTwo)
+
+
+fitOIResidPlot = plot(layer(x = xOIData, y = fitOI.resid, Geom.smooth),
+      Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Residual"), Guide.title("Residual from curve fitting results"))
+
+writeOutPlot(fileName, "residualOI", fitOIResidPlot)
+
+
+

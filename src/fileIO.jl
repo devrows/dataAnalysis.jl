@@ -95,7 +95,23 @@ function importFile(fileName::ASCIIString)
   return csvArray
 end
 
-#function writeOutPlot(fileName::ASCIIString, plotType::ASCIIString, plotToWriteOut::Plot)
+function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::Plot)
+  #location is defaulted to the location of the file that calls the function
+  currentLocation = Base.source_path()
+
+  #Parses string, moves to docs directory, reads the files in the docs directory
+  cd()
+  cd(split(currentLocation, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/reports")
+  cd(name)
+
+  #plotName = name"-" plotType ".png"=#
+
+  plotNameSVG = string(name, "-", plotType, ".svg")
+  plotNamePNG = string(name, "-", plotType, ".png")
+
+  draw(SVG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
+  #draw(PNG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
+end
 
 
 
