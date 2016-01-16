@@ -5,6 +5,9 @@ Last update: October 1, 2015
 Defines module for using as a package
 """
 
+Pkg.installed()
+Pkg.update()
+
 module dataAnalysis
 
   #List packages used

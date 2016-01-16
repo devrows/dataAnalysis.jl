@@ -49,7 +49,6 @@ function findFilesToAnalyze()
 
   allFiles = readdir()
 
-
   return allFiles
 end
 
@@ -108,8 +107,10 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
 
   plotNameSVG = string(name, "-", plotType, ".svg")
   plotNamePNG = string(name, "-", plotType, ".png")
+  tempPlotName = string(plotType, ".svg")
 
-  draw(SVG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
+  draw(SVG(tempPlotName, 4inch, 3inch), plotToWriteOut)
+  #draw(SVG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
   #draw(PNG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
 end
 
