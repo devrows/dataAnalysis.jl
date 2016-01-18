@@ -338,14 +338,3 @@ function curve_simulation(modelFunction(x,p)::Function, parameterResults)
 end
 
 
-
-http://pds-geosciences.wustl.edu/msl/msl-m-chemcam-libs-4_5-rdr-v1/mslccm_1xxx/data/sol00899/
-
-csvArray = readdlm("http://pds-geosciences.wustl.edu/msl/msl-m-chemcam-libs-4_5-rdr-v1/mslccm_1xxx/data/sol00899/cl5_477306561ccs_f0450150ccam01899p3.csv", ',', Float64)
-
-
-
-download("http://pds-geosciences.wustl.edu/msl/msl-m-chemcam-libs-4_5-rdr-v1/mslccm_1xxx/data/sol00899/cl5_477306561ccs_f0450150ccam01899p3.csv")
-read(julia)
-
-read()

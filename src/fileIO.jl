@@ -32,7 +32,7 @@ function createDirectoryForReport(fileName::ASCIIString)
     print(pwd())
     print("\n")
   else
-    print("Successfully found directory \n")
+    #print("Successfully found directory \n")
   end
 end
 
@@ -108,6 +108,8 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
   plotNameSVG = string(name, "-", plotType, ".svg")
   plotNamePNG = string(name, "-", plotType, ".png")
   tempPlotName = string(plotType, ".svg")
+
+  #Switch to .png graphics
 
   draw(SVG(tempPlotName, 4inch, 3inch), plotToWriteOut)
   #draw(SVG(plotNameSVG, 4inch, 3inch), plotToWriteOut)

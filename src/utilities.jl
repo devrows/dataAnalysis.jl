@@ -26,7 +26,7 @@ function areaUnderCurveCentral(localArray::Array)
       width = endingWidth - startingWidth
       length = localArray[localRow, localColumn]
 
-      areaUnderCurve [localColumn-1, 2] += length*width
+      areaUnderCurve[localColumn-1, 2] += length*width
     end
   end
 
@@ -53,7 +53,7 @@ function areaUnderCurveRightSum(localArray::Array)
       width = localArray[localRow+1,1] - localArray[localRow,1]
       length = localArray[localRow, localColumn]
 
-      areaUnderCurve [localColumn-1, 2] += length*width
+      areaUnderCurve[localColumn-1, 2] += length*width
     end
   end
 
@@ -147,7 +147,6 @@ function layerPlots(arrayForLayers::Array)
   return plotToReturn
 end
 
-
 function parseArray(arrayFromFile::Array)
   """
   Parses the array for easier access from other functions
@@ -203,7 +202,7 @@ function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString)
 
   max_x -= xScale
 
-  print("Plotting data from 1 - $max_x \n")
+  #print("Plotting data from 1 - $max_x \n")
 
   myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], Geom.line,
               Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average value"), Guide.title("Plot of mean values"))

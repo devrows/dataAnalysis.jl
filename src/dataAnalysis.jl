@@ -5,13 +5,10 @@ Last update: October 1, 2015
 Defines module for using as a package
 """
 
-Pkg.installed()
-Pkg.update()
-
 module dataAnalysis
 
   #List packages used
-  using Gadfly
+  using Gadfly, LsqFit, ProgressMeter
 
   #export functions used in the module
   export
@@ -24,6 +21,9 @@ module dataAnalysis
     #findError.jl
     calculateBackgroundMinimumError,
     errorIntervals,
+
+    #fullAnalysis.jl
+    fullAnalysis,
 
     #utilities.jl
     areaUnderCurveCentral,
@@ -40,10 +40,10 @@ module dataAnalysis
     vectorMean,
     vectorStandardDeviation
 
-
   #List files containing functions
   include("fileIO.jl")
   include("findError.jl")
+  include("fullAnalysis.jl")
   include("utilities.jl")
   include("vectorStats.jl")
 end
