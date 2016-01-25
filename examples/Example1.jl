@@ -11,7 +11,7 @@ using Gadfly, dataAnalysis
 allFiles = findFilesToAnalyze()
 #Add progress bar
 #for all possible files
-fileName = allFiles[1]
+fileName = convert(ASCIIString, allFiles[2])
 
 
 #initial functions called
@@ -30,6 +30,7 @@ maxAndMinWavelength = wavelengthDifferetial(parsedArray)
 #find row for wavelength
 wavelengthOne = 289.9785
 wavelengthTwo = 337.2671
+
 meanColumn = size(csvArray)[2]
 
 #example one, use example two
