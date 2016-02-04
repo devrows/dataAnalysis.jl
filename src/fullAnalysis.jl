@@ -98,9 +98,6 @@ function fullAnalysis(printReport::Bool)
           paramGuess = [peakOneMax, csvArray[peak,1], 0.5*stdDev, peakTwoMax, csvArray[peak,1], 0.01*stdDev]
           fit = curve_fit(MODEL, xData, yData, paramGuess)
 
-          #fitType = typeof(fit)
-          #print("fit type = $fitType \n")
-
           #results
           curveResults = Array(Float64, length(yData))
 
@@ -143,15 +140,23 @@ function fullAnalysis(printReport::Bool)
             writeOutPlot(fileName, "localPeakPlot[peak-$wave]", peakPlot)
           end
 
-          #zoom in on one fit
-          fitLayer = layer(x = xData, y = curveResults, Geom.smooth)
-          dataLayer = layer(x = xData, y = yData, Geom.point)
-
+          #zoom in on one peak
           peakSmall = plot(layer(x = localArray[:,1], y = localArray[:,size(localArray)[2]], Geom.smooth),
               Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of a combined peak"))
           writeOutPlot(fileName, "zoomIn[peak-$wave]", peakSmall)
 
           #curve fitting
+          if peakMax > 100
+            yMins = yData - sqrt(abs(yData))
+            yMaxs = yData + sqrt(abs(yData))
+          else
+            yMins = yData - 0.1*yData
+            yMaxs = yData + 0.1*yData
+          end
+
+          fitLayer = layer(x = xData, y = curveResults, Geom.smooth)
+          dataLayer = layer(x = xData, y = yData, ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar)
+
           fitPlot = plot(dataLayer, fitLayer,
               Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
 

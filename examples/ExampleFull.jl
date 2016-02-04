@@ -23,6 +23,9 @@ Example file for a full analysis of data
 
 using dataAnalysis
 
-fullAnalysis()
+#parameters
+printReport = false
+
+fullAnalysis(printReport)
 
 
