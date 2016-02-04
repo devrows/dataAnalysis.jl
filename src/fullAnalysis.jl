@@ -52,8 +52,10 @@ function fullAnalysis(printReport::Bool)
 
       #Pre-analysis plots
       #mean total spectrum
-      meanPlot = plotMeanValues(parsedArray, fileName)
+      meanPlot = plotMeanValues(parsedArray, fileName, false)
+      spectraPlot = plotMeanValues(parsedArray, fileName, true)
       writeOutPlot(fileName, "meanValuePlot", meanPlot)
+      writeOutPlot(fileName, "meanValueSpectrum", spectraPlot)
 
       for peakNum = 1:length(wavelength)
         row = findWaveRow(wavelength[peakNum], csvArray)

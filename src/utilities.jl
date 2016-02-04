@@ -170,7 +170,7 @@ end
 
 
 #Plotting the mean values
-function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString)
+function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString, plotErrors::Bool)
   """
   Plots the mean value of the data
   Packages used: Gadfly
@@ -208,8 +208,16 @@ function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString)
 
   #print("Plotting data from 1 - $max_x \n")
 
-  myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], Geom.line,
-              Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average value"), Guide.title("Plot of mean values"))
+  if plotErrors == false
+    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], Geom.line,
+                Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average Intensity"), Guide.title("Plot of mean values"))
+  else
+    yMins = arrayToPlot[1:max_x,2] - sqrt(abs(arrayToPlot[1:max_x,2]))
+    yMaxs = arrayToPlot[1:max_x,2] + sqrt(abs(arrayToPlot[1:max_x,2]))
+
+    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar,
+                Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average Intensity"), Guide.title("Spectrum of mean values"))
+  end
 
   plotName = "Plot_of_$fileName.png"
 
