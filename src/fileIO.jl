@@ -104,15 +104,22 @@ function importFile(fileName::ASCIIString)
 
   #loop to search for fileName
   fileCheck = false
+  printError = true
+
   for i = 1:length(readdir())
     if fileName == readdir()[i]
       fileCheck = true
     end
   end
 
+  if fileName == "test" || fileName == ".DS_Store" || fileName == "."
+    fileCheck = false
+    printError = false
+  end
+
   #prints an error statement if the file is not there
   if fileCheck == false
-    if fileName != "test"
+    if printError
       print("ERROR: File ")
       print(fileName)
       print(" could not be found in ")
@@ -124,6 +131,7 @@ function importFile(fileName::ASCIIString)
   end
 
   #Reads the table into a Vector
+
   fileLocation = pwd()"/"fileName
   csvArray = readdlm(fileLocation, ',', Float64)
 
@@ -162,5 +170,8 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
   #draw(PNG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
 end
 
+function writeOutText(name::ASCIIString, writingToFile::LsqFit.LsqFitResult{Float64})
 
+
+end
 

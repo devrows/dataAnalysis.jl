@@ -10,6 +10,13 @@ module dataAnalysis
   #List packages used
   using Gadfly, LsqFit, ProgressMeter
 
+  #Variables/functions used in the analysis
+  #MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) #Gaussian function
+  #MODEL(x, param) = 0.5*param[4]/( ((x.-param[2]).^2) + ((0.5*param[4])^2) ) #Lorrentzian function
+  #Combination of Gaussian and lorrentzian added together, doesn't work well
+  #MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + ((0.5*param[4])/pi)*(1/( ((x.-param[5]).^2) + ((0.5*param[4])^2)))
+  MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2)))
+
   #export functions used in the module
   export
     #fileIO.jl
@@ -17,6 +24,7 @@ module dataAnalysis
     findFilesToAnalyze,
     importFile,
     writeOutPlot,
+    writeOutText,
 
     #findError.jl
     calculateBackgroundMinimumError,

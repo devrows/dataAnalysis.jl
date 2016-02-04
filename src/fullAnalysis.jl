@@ -5,15 +5,18 @@ Contains one function that will use other functions for a full analysis
 """
 
 #Function used for a full analysis of all data in the dataToAnalyze section
-function fullAnalysis()
+function fullAnalysis(printReport::Bool)
+  #=
+    - add paramater to fit certain sol dates
+      - Obviously findFilesToAnalyze will need to be updated
+    - add paramater for the type of fit
+  =#
+
   #All files to analyze
   print("Running dataAnalysis.jl from "*split(Base.source_path(), "dataAnalysis.jl")[1]*"dataAnalysis.jl")
   allFiles = findFilesToAnalyze()
   totalFiles = length(allFiles)
   print("Analyzing a total of $totalFiles files. \n")
-
-  #Gaussian function used as a model
-  model(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
 
   #wavelengths to check
   wavelength = [289.9785, 337.2671, 766.48991, 777.5388]
@@ -30,6 +33,7 @@ function fullAnalysis()
     end
 
     #initial functions called
+    #print("Importing file = $fileName into csvArray \n")
     csvArray = importFile(fileName)
 
     if(csvArray != null)
@@ -43,7 +47,8 @@ function fullAnalysis()
 
       #Defining the mean column
       meanColumn = size(csvArray)[2]
-      fitColumn = 6
+      #fitColumn = 6
+      fitColumn = meanColumn
 
       #Pre-analysis plots
       #mean total spectrum
@@ -62,7 +67,7 @@ function fullAnalysis()
 
           #x and y data for each peak to fit
           xData = localArray[:,1]
-          yData = localArray[:,6]
+          yData = localArray[:,fitColumn]
 
           #stdDev = vectorStandardDeviation(xOneData)
           stdDev = vectorStandardDeviation(xData)
@@ -86,16 +91,21 @@ function fullAnalysis()
           end
 
           maximumWavelength = csvArray[globalMax, 1]
+          peakOneMax = 0.7*peakMax
+          peakTwoMax = 0.4*peakMax
 
-          #fit routine
-          paramGuess = [peakMax, csvArray[peak,1], stdDev]
-          fit = curve_fit(model, xData, yData, paramGuess)
+          #Curve fitting routine
+          paramGuess = [peakOneMax, csvArray[peak,1], 0.5*stdDev, peakTwoMax, csvArray[peak,1], 0.01*stdDev]
+          fit = curve_fit(MODEL, xData, yData, paramGuess)
+
+          #fitType = typeof(fit)
+          #print("fit type = $fitType \n")
 
           #results
           curveResults = Array(Float64, length(yData))
 
           for i = 1:length(yData)
-            curveResults[i] = model(xData[i], fit.param)
+            curveResults[i] = MODEL(xData[i], fit.param)
           end
 
           #plots
@@ -109,12 +119,20 @@ function fullAnalysis()
             areasUnder[i,2] = areasCentre[i,2]
           end
 
-          #area under curve shot progression
-          areaPlot = Gadfly.plot(x = areasUnder[:,1], y =areasUnder[:,2], Geom.line,
-                                 Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"),
-                                 Guide.title("Area under the peak over time (wavelength = $wave)"))
+          if printReport
+            print("calling plot functions for \n \t peakNum = $peakNum \n \t name = $fileName \n")
+          end
 
-          writeOutPlot(fileName, "areaUnderCurveProgression[peak-$wave]", areaPlot)
+          try
+            #area under curve shot progression
+            areaPlot = Gadfly.plot(x = areasUnder[:,1], y =areasUnder[:,2], Geom.line,
+                                 Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"),
+                                 Guide.title("Area under the peak over time (wavelength = $wave nm)"))
+
+            writeOutPlot(fileName, "areaUnderCurveProgression[peak-$wave]", areaPlot)
+          catch
+            error
+          end
 
           #zoom in on peak
           peakLayers = layerPlots(localArray) # just layering
@@ -144,6 +162,11 @@ function fullAnalysis()
               Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Residual"), Guide.title("Residual from curve fitting results"))
 
           writeOutPlot(fileName, "Residual[peak-$wave]", fitResidPlot)
+
+          if printReport
+            print("It worked \n")
+          end
+
         end #end if valid peak
       end #end for peakNum
     end #end if null csvArray

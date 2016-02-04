@@ -85,27 +85,27 @@ function findClosestMax(waveRow::Int64, columnToCheck::Int64, csvArray::Array)
   Recursively calls a function to find the closest peak
   """
 
-  if (waveRow < size(csvArray, 1) && columnToCheck < size(csvArray, 2) && waveRow > 0)
+  if (waveRow < size(csvArray, 1) && waveRow > 0 && waveRow != null)
     waveDifferentialRight = csvArray[waveRow+1, columnToCheck] - csvArray[waveRow, columnToCheck]
     waveDifferentialLeft = csvArray[waveRow, columnToCheck] - csvArray[waveRow-1, columnToCheck]
+
+    #found peak if
+    if (waveDifferentialRight < 0) && (waveDifferentialLeft > 0)
+      return waveRow
+    end
+
+    if waveDifferentialRight > 0 #Look right
+      theRow = findClosestMax(waveRow+1, columnToCheck, csvArray)
+    elseif waveDifferentialLeft < 0 #look left
+      theRow = findClosestMax(waveRow-1, columnToCheck, csvArray)
+    else
+      theRow = waveRow
+    end
+
+    return theRow
   else
     return null
   end
-
-  #found peak if
-  if (waveDifferentialRight < 0) && (waveDifferentialLeft > 0)
-    return waveRow
-  end
-
-  if waveDifferentialRight > 0 #Look right
-    theRow = findClosestMax(waveRow+1, columnToCheck, csvArray)
-  elseif waveDifferentialLeft < 0 #look left
-    theRow = findClosestMax(waveRow-1, columnToCheck, csvArray)
-  else
-    theRow = waveRow
-  end
-
-  return theRow
 end
 
 
