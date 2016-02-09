@@ -5,7 +5,7 @@ Contains one function that will use other functions for a full analysis
 """
 
 #Function used for a full analysis of all data in the dataToAnalyze section
-function fullAnalysis(printReport::Bool)
+function fullAnalysis(printReport::Bool, testingParams::Bool)
   #=
     - add paramater to fit certain sol dates
       - Obviously findFilesToAnalyze will need to be updated
@@ -148,19 +148,27 @@ function fullAnalysis(printReport::Bool)
           writeOutPlot(fileName, "zoomIn[peak-$wave]", peakSmall)
 
           #curve fitting
-          if peakMax > 100
-            yMins = yData - sqrt(abs(yData))
-            yMaxs = yData + sqrt(abs(yData))
-          else
-            yMins = yData - 0.1*yData
-            yMaxs = yData + 0.1*yData
-          end
+          yMins = yData - 0.05*yData
+          yMaxs = yData + 0.05*yData
 
           fitLayer = layer(x = xData, y = curveResults, Geom.smooth)
           dataLayer = layer(x = xData, y = yData, ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar)
 
-          fitPlot = plot(dataLayer, fitLayer,
+          if testingParams
+            paramResults = Array(Float64, length(yData))
+
+            for i = 1:length(yData)
+              paramResults[i] = MODEL(xData[i], paramGuess)
+            end
+
+            paramLayer = layer(x = xData, y = paramResults, Geom.smooth)
+
+            fitPlot = plot(dataLayer, fitLayer, paramLayer,
               Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+          else
+            fitPlot = plot(dataLayer, fitLayer,
+              Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+          end
 
           writeOutPlot(fileName, "currentFit[peak-$wave]", fitPlot)
 

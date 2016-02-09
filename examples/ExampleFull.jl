@@ -24,8 +24,7 @@ Example file for a full analysis of data
 using dataAnalysis
 
 #parameters
-printReport = false
+printReport = true
+testingParams = true
 
-fullAnalysis(printReport)
-
-
+fullAnalysis(printReport, testingParams)

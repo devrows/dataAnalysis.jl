@@ -31,7 +31,7 @@ module dataAnalysis
     errorIntervals,
 
     #fullAnalysis.jl
-    #fullAnalysis,
+    fullAnalysis,
 
     #utilities.jl
     areaUnderCurveCentral,
@@ -51,7 +51,7 @@ module dataAnalysis
   #List files containing functions
   include("fileIO.jl")
   include("findError.jl")
-  #include("fullAnalysis.jl")
+  include("fullAnalysis.jl")
   include("utilities.jl")
   include("vectorStats.jl")
 end

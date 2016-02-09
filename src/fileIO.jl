@@ -15,30 +15,21 @@ function createDirectoryForReport(fileName::ASCIIString)
   cd()
   cd(split(currentPath, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/reports")
 
-  filesInDirectory = readdir()
-  dirCheck = false
-
   if (contains(fileName, "/"))
     dirName = split(fileName, '/')[1]
     fileName = split(fileName, '/')[2]
-    nameOfReport = string(dirName, "-", fileName)
-  end
 
-  #searches files
-  for i = 1:length(filesInDirectory)
-    if nameOfReport == filesInDirectory[i]
-      dirCheck = true
+    if isdir(dirName) == false
+      mkdir(dirName)
     end
-  end
 
-  #reports the status about the directory
-  if dirCheck == false
-    mkdir(nameOfReport)
-    #=print("Successfully created a directory created in: ")
-    print(pwd())
-    print("\n")=#
-  else
-    #print("Successfully found directory \n")
+    cd(dirName)
+
+    if isdir(fileName) == false
+      mkdir(fileName)
+    end
+
+    cd(fileName)
   end
 end
 
@@ -151,8 +142,9 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
   if (contains(name, "/"))
     dirName = split(name, '/')[1]
     fileName = split(name, '/')[2]
-    nameOfReportDir = string(dirName, "-", fileName)
-    cd(nameOfReportDir)
+
+    cd(dirName)
+    cd(fileName)
   else
     cd(name)
   end
