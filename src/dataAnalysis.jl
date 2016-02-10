@@ -11,11 +11,14 @@ module dataAnalysis
   using Gadfly, LsqFit, ProgressMeter
 
   #Variables/functions used in the analysis
-  #MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) #Gaussian function
-  #MODEL(x, param) = 0.5*param[4]/( ((x.-param[2]).^2) + ((0.5*param[4])^2) ) #Lorrentzian function
-  #Combination of Gaussian and lorrentzian added together, doesn't work well
-  #MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + ((0.5*param[4])/pi)*(1/( ((x.-param[5]).^2) + ((0.5*param[4])^2)))
-  MODEL(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2)))
+  #Gaussian function
+  MODEL_1(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
+  #Lorrentzian function
+  MODEL_2(x, param) = 0.5*param[1]/( ((x.-param[2]).^2) + ((0.5*param[1])^2) )
+  #Lorrentzian+Gaussian
+  MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + ((0.5*param[4])/pi)*(1/( ((x.-param[5]).^2) + ((0.5*param[4])^2)))
+  #Gaussian+Gaussian
+  MODEL_4(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))+param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2))) #Gaussian linear combination
 
   #export functions used in the module
   export
@@ -33,6 +36,11 @@ module dataAnalysis
     #fullAnalysis.jl
     fullAnalysis,
 
+    #plots.jl
+    areaUnderCurveRiemann,
+    generateFitPlots,
+    plotMeanValues,
+
     #utilities.jl
     areaUnderCurveCentral,
     areaUnderCurveRightSum,
@@ -41,7 +49,6 @@ module dataAnalysis
     findWaveRow,
     layerPlots,
     parseArray,
-    plotMeanValues,
     wavelengthDifferetial,
 
     #vectorStats.jl
@@ -52,6 +59,7 @@ module dataAnalysis
   include("fileIO.jl")
   include("findError.jl")
   include("fullAnalysis.jl")
+  include("plots.jl")
   include("utilities.jl")
   include("vectorStats.jl")
 end
