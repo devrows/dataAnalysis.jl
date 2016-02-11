@@ -149,17 +149,11 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
     cd(name)
   end
 
-  #plotName = name"-" plotType ".png"=#
+  plotNameSVG = string(plotType, ".svg")
+  plotNamePNG = string(plotType, ".png")
 
-  plotNameSVG = string(name, "-", plotType, ".svg")
-  plotNamePNG = string(name, "-", plotType, ".png")
-  tempPlotName = string(plotType, ".svg")
-
-  #Switch to .png graphics
-
-  draw(SVG(tempPlotName, 4inch, 3inch), plotToWriteOut)
-  #draw(SVG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
-  #draw(PNG(plotNameSVG, 4inch, 3inch), plotToWriteOut)
+  draw(SVG(plotNameSVG, 6inch, 4.5inch), plotToWriteOut)
+  #draw(PNG(plotNamePNG, 6inch, 4.5inch), plotToWriteOut)
 end
 
 function writeOutText(name::ASCIIString, writingToFile::LsqFit.LsqFitResult{Float64})

@@ -8,8 +8,8 @@ Contains one function that will use other functions for a full analysis
 #=
   - add paramater to fit certain sol dates
 =#
-function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64)
-  @assert(fitFunction > 0 && fitFunction < 5, "The fit type must be an integer of 1,2,3, or 4")
+function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64, testingModel=null::Function)
+  @assert(fitFunction > 0 && fitFunction < 6, "The fit type must be an integer of 1,2,3, 4, 5")
 
   #All files to analyze
   print("Running dataAnalysis.jl from "*split(Base.source_path(), "dataAnalysis.jl")[1]*"dataAnalysis.jl")
@@ -18,22 +18,13 @@ function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64
   print("Analyzing a total of $totalFiles files. \n")
 
   #wavelengths to check
-  wavelength = [289.9785, 337.2671, 766.48991, 777.5388]
-
-  #=if fitFunction == 1
-    MODEL = MODEL_1
-  elseif fitFuntion == 2
-    MODEL = MODEL_2
-  elseif fitFuntion == 3
-    MODEL = MODEL_3
-  elseif fitFuntion == 4
-    MODEL = MODEL_4
-  end=#
+  #337.2671
+  wavelength = [288.21, 412.05, 634.85, 766.48991, 770.1, 777.5388, 844.85]
 
   #for all possible files
   for fileNum = 1:totalFiles
-    #ProgressMeter
-    progressBar = Progress(totalFiles, 1, "Writing file $fileNum of $totalFiles", 30)
+    #Initialize the ProgressMeter
+    progressBar = Progress(totalFiles, 5, "Writing file $fileNum of $totalFiles", 30)
 
     #get files for analysis
     fileName = allFiles[fileNum]
@@ -48,23 +39,22 @@ function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64
     if(csvArray != null)
       createDirectoryForReport(fileName)
       parsedArray = parseArray(csvArray)
-      #=not yet needed
-      calculatedMean = vectorMean(parsedArray[:,2])
-      areaOfLowValues = errorIntervals(parsedArray, calculatedMean)
-      minimumError = calculateBackgroundMinimumError(areaOfLowValues, parsedArray)
-      maxAndMinWavelength = wavelengthDifferetial(parsedArray)=#
+      fullReport = Array(ASCIIString, 1, 5)
+      fullReport[1,:] = ["File name", "Wavelength", "Element",
+                         "Max Peak", "Area Under the curve"]
+      #Write out to a new file for each element, then maybe combine it with all moc files
+      #Plot each each element against oxygen separately
+      #Plot my abundance calculations against theirs
 
       #Defining the mean column
       meanColumn = size(csvArray)[2]
-      #fitColumn = 6
       fitColumn = meanColumn
 
       #Pre-analysis plots
       #mean total spectrum
-      meanPlot = plotMeanValues(parsedArray, fileName, false)
-      writeOutPlot(fileName, "meanValuePlot", meanPlot)
-      spectraPlot = plotMeanValues(parsedArray, fileName, true)
-      writeOutPlot(fileName, "meanValueSpectrum", spectraPlot)
+      #changed parsedArray to csvArray
+      meanPlot = plotMeanValues(csvArray, fileName, false)
+      spectraPlot = plotMeanValues(csvArray, fileName, true)
 
       for peakNum = 1:length(wavelength)
         row = findWaveRow(wavelength[peakNum], csvArray)
@@ -72,23 +62,21 @@ function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64
         wave = csvArray[peak,1]
         if peak != null
           #Change localArray to report local until finding the first local min
-          localArray = arrayLayers(peak, 5, csvArray)
+          localArray = findLocalArray(peak, 3, csvArray)
 
           #x and y data for each peak to fit
           xData = localArray[:,1]
           yData = localArray[:,fitColumn]
 
-          fitPlot = generateFitPlots(csvArray, xData, yData, fileName, peak, testingParams, fitFunction)
-          writeOutPlot(fileName, "currentFit[peak-$wave]", fitPlot)
+          fit_results = generateFitPlots(csvArray, xData, yData, fileName, peak, testingParams, fitFunction, testingModel)
+
 
           if printReport
             print("calling plot functions for \n \t peakNum = $peakNum \n \t name = $fileName \n")
           end
 
           try
-            areaPlot = areaUnderCurveRiemann(localArray)
-
-            writeOutPlot(fileName, "areaUnderCurveProgression[peak-$wave]", areaPlot)
+            areasUnderEstimate = areaUnderCurveRiemann(localArray, fileName)
           catch
             error
           end
@@ -96,8 +84,10 @@ function fullAnalysis(printReport::Bool, testingParams::Bool, fitFunction::Int64
           #zoom in on peak
           peakLayers = layerPlots(localArray) # just layering
 
-          if peakLayers != null
-            #writeOutPlot(fileName, "localPeakPlotOverAllShots[peak-$wave]", peakLayers)
+          try
+            writeOutPlot(fileName, "localPeakPlotOverAllShots[peak-$wave]", peakLayers)
+          catch
+            error
           end
 
           peakPlot = plot(layer(x = xData, y = yData, Geom.point),

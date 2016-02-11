@@ -60,25 +60,6 @@ function areaUnderCurveRightSum(localArray::Array)
   return areaUnderCurve
 end
 
-function arrayLayers(rowPeak::Int64, plotSurrounding::Int64, csvArray::Array)
-  """
-  Add a description
-  """
-  if (rowPeak > plotSurrounding) && (plotSurrounding > 0)
-    numberOfRows = (2*plotSurrounding) + 1
-    arrayToLayer = Array(Float64, numberOfRows, size(csvArray)[2])
-
-    for i = 1:size(csvArray)[2]
-      arrayToLayer[:,i] = csvArray[rowPeak-plotSurrounding:rowPeak+plotSurrounding, i] #wavelengths
-    end
-  else
-    print("The surrounding data cannot not be properly plotted, readjust the amount of surrounding data you are plotting.")
-    return null
-  end
-
-  return arrayToLayer
-end
-
 
 function findClosestMax(waveRow::Int64, columnToCheck::Int64, csvArray::Array)
   """
@@ -106,6 +87,26 @@ function findClosestMax(waveRow::Int64, columnToCheck::Int64, csvArray::Array)
   else
     return null
   end
+end
+
+
+function findLocalArray(rowPeak::Int64, plotSurrounding::Int64, csvArray::Array)
+  """
+  Add a description
+  """
+  if (rowPeak > plotSurrounding) && (plotSurrounding > 0)
+    numberOfRows = (2*plotSurrounding) + 1
+    arrayToLayer = Array(Float64, numberOfRows, size(csvArray)[2])
+
+    for i = 1:size(csvArray)[2]
+      arrayToLayer[:,i] = csvArray[rowPeak-plotSurrounding:rowPeak+plotSurrounding, i] #wavelengths
+    end
+  else
+    print("The surrounding data cannot not be properly plotted, vary the amount of surrounding data you are plotting.")
+    return null
+  end
+
+  return arrayToLayer
 end
 
 

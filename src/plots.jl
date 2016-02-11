@@ -7,9 +7,8 @@ Contains functions that will be used for actual plotting of data
 
 #Function for
 function areaUnderCurveRiemann(local_array::Array)
-  areasCentre = areaUnderCurveCentral(local_array)
-
   #area under curve over all shots
+  areasCentre = areaUnderCurveCentral(local_array)
   areasUnder = Array(Float64, size(areasCentre)[1] -1,2)
 
   for i = 1:size(areasUnder)[1] -1
@@ -22,12 +21,14 @@ function areaUnderCurveRiemann(local_array::Array)
                          Guide.xlabel("Shot Number"), Guide.ylabel("Area under the peak"),
                          Guide.title("Area under the peak over time (wavelength = $wave nm)"))
 
-  return areaPlot
+  writeOutPlot(fileName, "areaUnderCurveProgression[peak-$wave]", areaPlot)
+
+  return areasUnder
 end
 
 
 #Function for fitting curve and generating a plot of the fit
-function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_name::ASCIIString, peak::Int64, testing_params::Bool, fit_function::Int64)
+function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_name::ASCIIString, peak::Int64, testing_params::Bool, fit_function::Int64, MODEL::Function)
   #stdDev = vectorStandardDeviation(xOneData)
   stdDev = vectorStandardDeviation(x_data)
 
@@ -42,29 +43,38 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
 
   #results
   curveResults = Array(Float64, length(y_data))
+  peakLocation = csv_array[peak,1]
+  weightVector =  Array(Float64, length(y_data))
+  for it = 1:length(y_data)
+    weightVector[it] = 0.1*y_data[it]
+  end
 
   #Curve fitting routine
   if fit_function == 1
     MODEL = MODEL_1
-    paramGuess = [1.2*peakMax, csv_array[peak,1], 0.5*stdDev]
+    paramGuess = [1.2*peakMax, peakLocation, 0.5*stdDev]
   elseif fit_function == 2
     MODEL = MODEL_2
-    paramGuess = [2/peakMax, csv_array[peak,1]]
+    paramGuess = [2/peakMax, peakLocation]
   elseif fit_function == 3
     MODEL = MODEL_3
-    peakOneMax = 0.8*peakMax
+    peakOneMax = 0.7*peakMax
     peakTwoMax = 0.3*peakMax
 
-    paramGuess = [peakOneMax, csv_array[peak,1], 0.5*stdDev, 2/peakTwoMax, csv_array[peak,1]]
+    paramGuess = [peakOneMax, peakLocation, 0.5*stdDev, 2/peakTwoMax, peakLocation]
   elseif fit_function == 4
     MODEL = MODEL_4
-    peakOneMax = 0.8*peakMax
-    peakTwoMax = 0.4*peakMax
+    peakOneMax = 0.1*peakMax
+    peakTwoMax = 0.03*peakMax
 
-    paramGuess = [peakOneMax, csv_array[peak,1], 0.5*stdDev, peakTwoMax, csv_array[peak,1], 0.01*stdDev]
+    paramGuess = [peakOneMax, peakLocation, 0.5*stdDev, 2/peakTwoMax, peakLocation]
+    elseif fit_function == 5
+    #MODEL is already defined
+    paramGuess = [2/peakMax, peakLocation]
   end
 
-  fit = curve_fit(MODEL, x_data, y_data, paramGuess)
+  fit = curve_fit(MODEL, x_data, y_data, weightVector, paramGuess)
+  #fit = curve_fit(MODEL, x_data, y_data, paramGuess)
 
   wave = csv_array[peak,1]
 
@@ -103,6 +113,8 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
     fitPlot = plot(dataLayer, fitLayer,
                    Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
   end
+
+  writeOutPlot(file_name, "currentFit[peak-$wave]", fitPlot)
 
   return fitPlot
 end
@@ -148,17 +160,23 @@ function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString, plotErrors::B
   #print("Plotting data from 1 - $max_x \n")
 
   if plotErrors == false
-    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], Geom.line,
-                Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average Intensity"), Guide.title("Plot of mean values"))
+    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,size(arrayToPlot)[2]],
+                  Geom.line,Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average Intensity"), Guide.title("Plot of mean values"))
+
+    plotName = "meanValuePlot"
   else
     yMins = arrayToPlot[1:max_x,2] - sqrt(abs(arrayToPlot[1:max_x,2]))
     yMaxs = arrayToPlot[1:max_x,2] + sqrt(abs(arrayToPlot[1:max_x,2]))
 
-    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,2], ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar,
+    myPlot = plot(x=arrayToPlot[1:max_x,1],y=arrayToPlot[1:max_x,size(arrayToPlot)[2]], ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar,
                 Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Average Intensity"), Guide.title("Spectrum of mean values"))
+
+    plotName = "meanValueSpectrum"
   end
 
-  plotName = "Plot_of_$fileName.png"
+  writeOutPlot(fileName, plotName, myPlot)
+
+  #plotName = "Plot_of_$fileName.png"
 
   #Write out the plot as a .png file
   #draw(PNG(plotName, 4inch, 3inch), myPlot)

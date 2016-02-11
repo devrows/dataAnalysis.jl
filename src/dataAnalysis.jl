@@ -14,11 +14,11 @@ module dataAnalysis
   #Gaussian function
   MODEL_1(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
   #Lorrentzian function
-  MODEL_2(x, param) = 0.5*param[1]/( ((x.-param[2]).^2) + ((0.5*param[1])^2) )
+  MODEL_2(x, param) = (param[1])./((x-param[2]).^2 + (0.5*param[1]).^2)
   #Lorrentzian+Gaussian
-  MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + ((0.5*param[4])/pi)*(1/( ((x.-param[5]).^2) + ((0.5*param[4])^2)))
-  #Gaussian+Gaussian
-  MODEL_4(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))+param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2))) #Gaussian linear combination
+  MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + (param[4])./((x-param[5]).^2 + (0.5*param[4]).^2)
+  #Gaussian*Lorrentzian
+  MODEL_4(x, param) = (param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))).*((param[4])./((x-param[5]).^2 + (0.5*param[4]).^2))
 
   #export functions used in the module
   export
@@ -44,8 +44,8 @@ module dataAnalysis
     #utilities.jl
     areaUnderCurveCentral,
     areaUnderCurveRightSum,
-    arrayLayers,
     findClosestMax,
+    findLocalArray,
     findWaveRow,
     layerPlots,
     parseArray,
