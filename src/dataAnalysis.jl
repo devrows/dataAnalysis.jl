@@ -14,11 +14,11 @@ module dataAnalysis
   #Gaussian function
   MODEL_1(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
   #Lorrentzian function
-  MODEL_2(x, param) = (param[1])./((x-param[2]).^2 + (0.5*param[1]).^2)
+  MODEL_2(x, param) = (0.5*param[1])./(pi*((x-param[2]).^2 + (0.5*param[1]).^2))
   #Lorrentzian+Gaussian
   MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + (param[4])./((x-param[5]).^2 + (0.5*param[4]).^2)
   #Gaussian*Lorrentzian
-  MODEL_4(x, param) = (param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))).*((param[4])./((x-param[5]).^2 + (0.5*param[4]).^2))
+  MODEL_4(x, param) = (param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))))+(param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2))))
 
   #export functions used in the module
   export
@@ -41,9 +41,13 @@ module dataAnalysis
     generateFitPlots,
     plotMeanValues,
 
+    #types.jl
+    OxideComponents,
+    setToZero!,
+
     #utilities.jl
-    areaUnderCurveCentral,
-    areaUnderCurveRightSum,
+    areaUnderCurveCentral, #Don't need, use someone elses (Maybe ROC.jl)
+    areaUnderCurveRightSum, #Don't need, use someone elses (Maybe ROC.jl)
     findClosestMax,
     findLocalArray,
     findWaveRow,
@@ -52,7 +56,7 @@ module dataAnalysis
     wavelengthDifferetial,
 
     #vectorStats.jl
-    vectorMean,
+    vectorMean, #Don't need
     vectorStandardDeviation
 
   #List files containing functions
@@ -60,6 +64,7 @@ module dataAnalysis
   include("findError.jl")
   include("fullAnalysis.jl")
   include("plots.jl")
+  include("types.jl")
   include("utilities.jl")
   include("vectorStats.jl")
 end

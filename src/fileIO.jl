@@ -153,7 +153,7 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
   plotNamePNG = string(plotType, ".png")
 
   draw(SVG(plotNameSVG, 6inch, 4.5inch), plotToWriteOut)
-  #draw(PNG(plotNamePNG, 6inch, 4.5inch), plotToWriteOut)
+  draw(PNG(plotNamePNG, 6inch, 4.5inch), plotToWriteOut)
 end
 
 function writeOutText(name::ASCIIString, writingToFile::LsqFit.LsqFitResult{Float64})

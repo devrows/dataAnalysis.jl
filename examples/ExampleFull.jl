@@ -9,18 +9,19 @@ using dataAnalysis
 #parameters
 printReport = false
 testingParams = false
+realRun = true #Add functionality to this
 
 #= For fitType
 1 = Gaussian
 2 = Lorrentzian
 3 = Gaussian+Lorrentzian
-4 = Gaussian*Lorrentzian
+4 = Pseudo-voight profile(coming soon)
 5= Testing model=#
-fitType = 3
+fitType = 1
 
-fullAnalysis(printReport, testingParams, fitType)
+fullAnalysis(printReport, testingParams, fitType, realRun)
 
 #for testing
-MODEL_test(x, param) = (param[1])./((x-param[2]).^2 + (0.5*param[1]).^2)
+MODEL_test(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
 MODEL_test(1,[2,1])
 fullAnalysis(printReport, testingParams, fitType, MODEL_test)

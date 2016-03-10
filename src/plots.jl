@@ -45,8 +45,13 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
   curveResults = Array(Float64, length(y_data))
   peakLocation = csv_array[peak,1]
   weightVector =  Array(Float64, length(y_data))
+  paramToSkip = 0
   for it = 1:length(y_data)
-    weightVector[it] = 0.1*y_data[it]
+    weightVector[it] = 0.05*y_data[it]
+
+    if y_data[it] == peakMax
+      weightVector[it] = 0.1*y_data[it]
+    end
   end
 
   #Curve fitting routine
@@ -55,22 +60,25 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
     paramGuess = [1.2*peakMax, peakLocation, 0.5*stdDev]
   elseif fit_function == 2
     MODEL = MODEL_2
-    paramGuess = [2/peakMax, peakLocation]
+    paramGuess = [2/(pi*peakMax), peakLocation]
   elseif fit_function == 3
     MODEL = MODEL_3
-    peakOneMax = 0.7*peakMax
+    peakOneMax = 0.8*peakMax
     peakTwoMax = 0.3*peakMax
 
     paramGuess = [peakOneMax, peakLocation, 0.5*stdDev, 2/peakTwoMax, peakLocation]
   elseif fit_function == 4
     MODEL = MODEL_4
-    peakOneMax = 0.1*peakMax
-    peakTwoMax = 0.03*peakMax
+    peakOneMax = 0.8*peakMax
+    peakTwoMax = 0.4*peakMax
 
-    paramGuess = [peakOneMax, peakLocation, 0.5*stdDev, 2/peakTwoMax, peakLocation]
+    paramGuess = [peakOneMax, peakLocation, 0.4*stdDev, peakTwoMax, peakLocation, 0.4*stdDev]
     elseif fit_function == 5
     #MODEL is already defined
-    paramGuess = [2/peakMax, peakLocation]
+    peakOneMax = 0.8*peakMax
+    peakTwoMax = 0.4*peakMax
+
+    paramGuess = [peakOneMax, peakLocation, 0.4*stdDev, peakTwoMax, peakLocation, 0.4*stdDev]
   end
 
   fit = curve_fit(MODEL, x_data, y_data, weightVector, paramGuess)
@@ -79,8 +87,8 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
   wave = csv_array[peak,1]
 
   try
-    fitResidPlot = plot(layer(x = x_data, y = fit.resid, Geom.smooth),
-                        Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Residual"), Guide.title("Residual from curve fitting results"))
+    fitResidPlot = plot(layer(x = x_data, y = fit.resid, Geom.point),
+                        Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Residual of curve fitting at $wave"), Guide.title("Residual from curve fitting results"))
     writeOutPlot(file_name, "Residual[peak-$wave]", fitResidPlot)
   catch
     MethodError
@@ -108,15 +116,15 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
 
     fitPlot = plot(dataLayer, fitLayer, paramLayer,
                    #=Guide.manual_color_key("Legend", ["dataLayer", "fitLayer", "paramLayer"], ["green", "deepskyblue", "black"]),=#
-                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit (wavelength = $wave)"))
   else
     fitPlot = plot(dataLayer, fitLayer,
-                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit"))
+                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit (wavelength = $wave)"))
   end
 
   writeOutPlot(file_name, "currentFit[peak-$wave]", fitPlot)
 
-  return fitPlot
+  return fit
 end
 
 
