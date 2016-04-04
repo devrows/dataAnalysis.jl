@@ -28,7 +28,10 @@ end
 
 
 #Function for fitting curve and generating a plot of the fit
-function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_name::ASCIIString, peak::Int64, testing_params::Bool, fit_function::Int64, MODEL::Function)
+function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array,
+  file_name::ASCIIString, peak::Int64, testing_params::Bool, fit_function::Int64,
+  MODEL::Function, displayFit::Bool)
+
   #stdDev = vectorStandardDeviation(xOneData)
   stdDev = vectorStandardDeviation(x_data)
 
@@ -47,11 +50,7 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
   weightVector =  Array(Float64, length(y_data))
   paramToSkip = 0
   for it = 1:length(y_data)
-    weightVector[it] = 0.05*y_data[it]
-
-    if y_data[it] == peakMax
-      weightVector[it] = 0.1*y_data[it]
-    end
+    weightVector[it] = 0.1*y_data[it]
   end
 
   #Curve fitting routine
@@ -75,10 +74,8 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
     paramGuess = [peakOneMax, peakLocation, 0.4*stdDev, peakTwoMax, peakLocation, 0.4*stdDev]
     elseif fit_function == 5
     #MODEL is already defined
-    peakOneMax = 0.8*peakMax
-    peakTwoMax = 0.4*peakMax
 
-    paramGuess = [peakOneMax, peakLocation, 0.4*stdDev, peakTwoMax, peakLocation, 0.4*stdDev]
+    paramGuess = [peakMax, peakLocation, stdDev, 0.05]
   end
 
   fit = curve_fit(MODEL, x_data, y_data, weightVector, paramGuess)
@@ -99,8 +96,8 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
   end
 
   #curve fitting
-  yMins = y_data - 0.05*y_data
-  yMaxs = y_data + 0.05*y_data
+  yMins = y_data - 0.1*y_data
+  yMaxs = y_data + 0.1*y_data
 
   fitLayer = layer(x = x_data, y = curveResults, Geom.smooth)
   dataLayer = layer(x = x_data, y = y_data, ymin = yMins, ymax = yMaxs, Geom.point, Geom.errorbar)
@@ -116,13 +113,18 @@ function generateFitPlots(csv_array::Array, x_data::Array, y_data::Array, file_n
 
     fitPlot = plot(dataLayer, fitLayer, paramLayer,
                    #=Guide.manual_color_key("Legend", ["dataLayer", "fitLayer", "paramLayer"], ["green", "deepskyblue", "black"]),=#
-                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit (wavelength = $wave)"))
+                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"),
+                   Guide.title("Local plot of Curve fit (wavelength = $wave)"))
   else
     fitPlot = plot(dataLayer, fitLayer,
-                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"), Guide.title("Local plot of Curve fit (wavelength = $wave)"))
+                   Guide.xlabel("Wavelength(nm)"), Guide.ylabel("Peak Intensity"),
+                   Guide.title("Local plot of Curve fit (wavelength = $wave)"))
   end
 
   writeOutPlot(file_name, "currentFit[peak-$wave]", fitPlot)
+  if displayFit
+    display(fitPlot)
+  end
 
   return fit
 end
@@ -191,6 +193,3 @@ function plotMeanValues(arrayToPlot::Array, fileName::ASCIIString, plotErrors::B
 
   return myPlot
 end
-
-
-

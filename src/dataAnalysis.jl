@@ -8,7 +8,7 @@ Defines module for using as a package
 module dataAnalysis
 
   #List packages used
-  using Gadfly, LsqFit, ProgressMeter
+  using DataFrames, Gadfly, LsqFit, ProgressMeter
 
   #Variables/functions used in the analysis
   #Gaussian function
@@ -16,9 +16,13 @@ module dataAnalysis
   #Lorrentzian function
   MODEL_2(x, param) = (0.5*param[1])./(pi*((x-param[2]).^2 + (0.5*param[1]).^2))
   #Lorrentzian+Gaussian
-  MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) + (param[4])./((x-param[5]).^2 + (0.5*param[4]).^2)
+  MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) +
+    (param[4])./((x-param[5]).^2 + (0.5*param[4]).^2)
   #Gaussian*Lorrentzian
-  MODEL_4(x, param) = (param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))))+(param[4]*exp(-((x.-param[5]).^2)/(2*(param[6]^2))))
+  MODEL_4(x, param) = param[1]*((1-param[4])*exp(-((x.-param[2]).^2)/((param[3]).^2)) +
+    param[4]./(1+((x-param[2])/param[3]).^2))
+
+  MODEL = [MODEL_1, MODEL_2, MODEL_3, MODEL_4]
 
   #export functions used in the module
   export
@@ -40,6 +44,10 @@ module dataAnalysis
     areaUnderCurveRiemann,
     generateFitPlots,
     plotMeanValues,
+
+    #summary.jl
+    compareMoc,
+    plotMoc,
 
     #types.jl
     OxideComponents,
@@ -64,6 +72,7 @@ module dataAnalysis
   include("findError.jl")
   include("fullAnalysis.jl")
   include("plots.jl")
+  include("summary.jl")
   include("types.jl")
   include("utilities.jl")
   include("vectorStats.jl")

@@ -149,10 +149,10 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
     cd(name)
   end
 
-  plotNameSVG = string(plotType, ".svg")
+  #plotNameSVG = string(plotType, ".svg")
   plotNamePNG = string(plotType, ".png")
 
-  draw(SVG(plotNameSVG, 6inch, 4.5inch), plotToWriteOut)
+  #draw(SVG(plotNameSVG, 6inch, 4.5inch), plotToWriteOut)
   draw(PNG(plotNamePNG, 6inch, 4.5inch), plotToWriteOut)
 end
 
