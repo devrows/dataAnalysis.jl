@@ -2,12 +2,12 @@
 Physics Research Project
 Devin Rose
 Last update: March, 2015
-Simple types
+Simple data structures used
 """
 
-#data types
+#oxideComponents data type
 type OxideComponents
-  #variables
+  #variables used
   O2::Float64
   Si::Float64
   K2::Float64

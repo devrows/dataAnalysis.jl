@@ -6,6 +6,8 @@ README file for an explanation of how to use this software
 
 Before computing an analysis of a .csv file, make sure to have the .csv file located in the docs/dataToAnalyze directory and run the program from the examples directory.
 
+After this, you really don't need to worry about anything below, just follow the examples/exampleFull instructions.
+
 **********
 Compilation
 **********
@@ -23,6 +25,7 @@ No user interface. When the function is called, a full analysis of files in the 
 Limitations
 **********
 
+Many plots causes a slow run time.
 
 **********
 File locations/contents
@@ -41,20 +44,21 @@ docs
 examples
 	- Contains a Julia (.jl) file demonstrating available functionality of the dataAnalysis.jl package.
 		- Example1.jl
+		- ExampleFill.jl
 
 src
 	- Contains the Julia source code.
-		- dataAnalysis.jl	
-		- findError.jl	
+		- dataAnalysis.jl
+		- findError.jl
 		- utilities.jl
-		- fileIO.jl	
-		- fullAnalysis.jl	
+		- fileIO.jl
+		- fullAnalysis.jl
 		- vectorStats.jl
 
 testing
 	- Contains testing and development information.
-		- miscTesting.jl		
-		- testCurveFitting.jl	
+		- miscTesting.jl
+		- testCurveFitting.jl
 		- testingUtilities.jl
 		- miscTestingTwo.jl
 		- testingFindError.jl

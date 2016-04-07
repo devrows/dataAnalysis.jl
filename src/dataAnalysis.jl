@@ -1,8 +1,8 @@
 """
 Physics Research Project
 Devin Rose
-Last update: October 1, 2015
-Defines module for using as a package
+Last update: October 2015
+Defines a module for using this code as a package
 """
 
 module dataAnalysis
@@ -10,19 +10,34 @@ module dataAnalysis
   #List packages used
   using DataFrames, Gadfly, LsqFit, ProgressMeter
 
-  #Variables/functions used in the analysis
-  #Gaussian function
+  #Variables/functions used as trial functions for fitting in the analysis
+  #=Gaussian function
+    param[1] = normalization constant/peak max
+    param[2] = location of peak maximum
+    param[3]^2 = standard deviation=#
   MODEL_1(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2)))
-  #Lorrentzian function
-  MODEL_2(x, param) = (0.5*param[1])./(pi*((x-param[2]).^2 + (0.5*param[1]).^2))
-  #Lorrentzian+Gaussian
+
+  #=Lorrentzian function
+    param[1] = normalization constant/peak max
+    param[2] = location of peak maximum
+    param[3]^2 = width of Lorrentzian peak=#
+  MODEL_2(x, param) = param[1]./(1+((x-param[2])/param[3]).^2)
+
+  #=Linear combination of Lorrentzian and Gaussian
+    Parameters have the same meaning as the previous two models=#
   MODEL_3(x, param) = param[1]*exp(-((x.-param[2]).^2)/(2*(param[3]^2))) +
-    (param[4])./((x-param[5]).^2 + (0.5*param[4]).^2)
-  #Gaussian*Lorrentzian
+    (param[4])./(1+((x-param[5])/param[4]).^2)
+
+  #=Pseudo-voigt - This is an approximation to the convoluton (a type of
+    integral transform) of a Gaussian and Lorrentzian
+    param[1] = normalization constant/peak max
+    param[2] = location of peak maximum
+    param[3]^2 = standard deviation of gaussian
+    param[3] = width of Lorrentzian peak
+    param[4] = transformation factor
+    param[5] = =#
   MODEL_4(x, param) = param[1]*((1-param[4])*exp(-((x.-param[2]).^2)/((param[3]).^2)) +
     param[4]./(1+((x-param[2])/param[3]).^2))
-
-  MODEL = [MODEL_1, MODEL_2, MODEL_3, MODEL_4]
 
   #export functions used in the module
   export
@@ -54,8 +69,8 @@ module dataAnalysis
     setToZero!,
 
     #utilities.jl
-    areaUnderCurveCentral, #Don't need, use someone elses (Maybe ROC.jl)
-    areaUnderCurveRightSum, #Don't need, use someone elses (Maybe ROC.jl)
+    areaUnderCurveCentral,
+    areaUnderCurveRightSum,
     findClosestMax,
     findLocalArray,
     findWaveRow,
@@ -64,10 +79,10 @@ module dataAnalysis
     wavelengthDifferetial,
 
     #vectorStats.jl
-    vectorMean, #Don't need
+    vectorMean,
     vectorStandardDeviation
 
-  #List files containing functions
+  #List files containing functions in alphabetical order
   include("fileIO.jl")
   include("findError.jl")
   include("fullAnalysis.jl")

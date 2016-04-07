@@ -5,10 +5,11 @@ Functions used to analyze the peak data
 """
 
 
-#need to be able to find the indexing for errorIntervals to access the proper indexing
+#Returns: integer of a minimum background error
 function calculateBackgroundMinimumError(areaOfLowValues::Array, parsedArray::Array)
   """
-  This function finds the minimum error that can be used as the background error. Returns
+    Simple calculation of the minimum background error to see if the actual
+    error calculated is feasible.
   """
   largestInterval = Array(Float64, 1, 3)
   largestInterval[1,:] = 0
@@ -38,11 +39,11 @@ end
 
 
 
-
+#Returns: Array of error intervals
 function errorIntervals(parsedArray::Array, meanOfAllData::Float64)
-"""
-Finds the intervals of values that are below the mean of the entire data
-"""
+  """
+    Finds the intervals of values that are below the mean of the entire data.
+  """
   lowValueIntervals = Array(Float64, 1, 2)
   lowValueIntervals[1,:] = 1
 
@@ -69,11 +70,9 @@ Finds the intervals of values that are below the mean of the entire data
           elementToAdd[1,2] = i
           lowValueIntervals = vcat(lowValueIntervals, elementToAdd)
         end
-      end #while loop
+      end #end while loop
     end #ends if conditions for the beginning of the loop
   end #ends for loop to find all intervals with values less than the mean
 
   return lowValueIntervals
 end
-
-

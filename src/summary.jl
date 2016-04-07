@@ -2,9 +2,10 @@
 Physics Research Project
 Devin Rose
 Last update: March, 2016
-Utilities to summarize the report
+Utilities to summarize the report and do consistancy checks.
 """
 
+#Returns:Array for comparing results with MOC
 function compareMoc(test::Array)
   comparison = Array(ASCIIString, size(test)[1], 2*(size(test)[2]-2)-2)
   comparison[:,:] = "0"
@@ -13,11 +14,12 @@ function compareMoc(test::Array)
   comparison[:,7] = test[:,5]
   comparison[:,9] = test[:,6]
 
+  #Move to the corrct location of the moc files
   cd()
   cd(split(Base.source_path(), "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/moc")
-  #mocArray = readdlm(pwd()"/compareMOC.csv", ',', ASCIIString)
   mocArray = readtable(pwd()"/compareMOC.csv")
 
+  #Converts to ASCIIString for the array
   for row = 1:size(comparison)[1]
     for mocRow = 1:size(mocArray)[1]
       if comparison[row, 1] == lowercase(mocArray[mocRow, 1])
@@ -32,7 +34,7 @@ function compareMoc(test::Array)
   return comparison
 end
 
-
+#Returns: Plot of the comparison
 function plotMoc(compMoc::Array, compToCompare::Int64)
   @assert(compToCompare > 0 && compToCompare < 5, "Element number must be between 1 and 4 for a proper comparison.")
   #for spectraNum = 1:size(testMoc)[1]
@@ -58,18 +60,15 @@ function plotMoc(compMoc::Array, compToCompare::Int64)
     yVals[index] = float(compMoc[index+1,xCol+1])
   end
 
-  #error bars
-  yMins = yVals - 0.1*yVals
-  yMaxs = yVals + 0.1*yVals
-  compareLayer = layer(x=xVals,y=yVals, ymin=yMins, ymax=yMaxs, Geom.point, Geom.errorbar)
+  #Too hard to read with error bars
+  compareLayer = layer(x=xVals,y=yVals, Geom.point)
 
-  #Linear regression
-  linear(x, p) = p[1]*x+p[2]
-  len = length(yVal)
-  regFit = curve_fit(linear, xVals, yVas, [(yVal[len]-yVal[1])/(xVal[len]-xVal[1]),yVal[1]])
-  regLayer = layer(x=xVals, y=yVals*regFit.param[1]+regFit.param[2], Geom.smooth)
+  #Linear regression, remove the comment below and in Plot to use it
+  #=linear(x, p) = p[1]*x+p[2]
+  regFit = linreg(xVals,yVals)
+  regLayer = layer(x=xVals, y=linear(xVals, regFit), Geom.smooth)=#
 
-  myPlot = plot(compareLayer,regLayer,
+  myPlot = plot(compareLayer, #regLayer,
     Guide.title(plotTitle), Guide.xlabel("Normalized area"), Guide.ylabel("MOC concentration(%)"))
 
   return myPlot

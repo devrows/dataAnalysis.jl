@@ -5,13 +5,15 @@ Contains functions to write out, and import files
 """
 
 
+#=Returns: N/A=#
 function createDirectoryForReport(fileName::ASCIIString)
   """
-  Creates a directory for the report
+    Uses defensive programming style to check for a directory for reports and
+    creates a one if a directory is not found.
   """
 
   #Get to the reports directory
-  currentPath = Base.source_path()
+  currentPath = Base.source_path() #Base.source_path() is the file path of this file
   cd()
   cd(split(currentPath, "dataAnalysis.jl")[1]"dataAnalysis.jl/docs/reports")
 
@@ -19,24 +21,28 @@ function createDirectoryForReport(fileName::ASCIIString)
     dirName = split(fileName, '/')[1]
     fileName = split(fileName, '/')[2]
 
+    #if there is not a directory, create one
     if isdir(dirName) == false
       mkdir(dirName)
     end
 
+    #move to the created/existing directory
     cd(dirName)
-
     if isdir(fileName) == false
+      #create a directory for the soectrum analyzed
       mkdir(fileName)
     end
 
+    #move to the new file
     cd(fileName)
   end
 end
 
 
+#=Returns: list of file names=#
 function findFilesToAnalyze()
   """
-  Add description
+    Finds all files in the filesToAnalyze directory inside of docs.
   """
 
   #move to the correct directory
@@ -45,12 +51,14 @@ function findFilesToAnalyze()
   cd()
   cd(directoryPath)
 
+  #Intialize memory for the list
   allDirs = Array(ASCIIString)
   allDirs = readdir()
   needFirstFile = true
   allFiles = Array(ASCIIString, 1)
   allFiles[1] = "test"
 
+  #Creates a list of all files found in directories dataToAnalyze/sol...
   for i = 1:length(allDirs)
     cd()
     cd(directoryPath)
@@ -73,11 +81,11 @@ end
 
 
 
-#Importing the .csv file as an array
+#=Returns: array of spectra from one file,
+  If a file fails, the function returns null=#
 function importFile(fileName::ASCIIString)
   """
-  Creates an array from the file name
-  If a file cannot be analyzed, function returns null
+    Creates an array from the file name passed
   """
 
   #location is defaulted to the location of the file that calls the function
@@ -96,13 +104,14 @@ function importFile(fileName::ASCIIString)
   #loop to search for fileName
   fileCheck = false
   printError = true
-
   for i = 1:length(readdir())
     if fileName == readdir()[i]
       fileCheck = true
     end
   end
 
+  #"test" is used as a dummy to intialize memory and ".DS_Store" is a file
+  #storing customization for Apple OSX
   if fileName == "test" || fileName == ".DS_Store" || fileName == "."
     fileCheck = false
     printError = false
@@ -114,6 +123,7 @@ function importFile(fileName::ASCIIString)
       print("ERROR: File ")
       print(fileName)
       print(" could not be found in ")
+      #pwd = Print working directory, shows if the path is correct
       print(pwd())
       print(". Now exiting \n")
     end
@@ -122,7 +132,6 @@ function importFile(fileName::ASCIIString)
   end
 
   #Reads the table into a Vector
-
   fileLocation = pwd()"/"fileName
   csvArray = readdlm(fileLocation, ',', Float64)
 
@@ -130,8 +139,11 @@ function importFile(fileName::ASCIIString)
 end
 
 
-
+#=Returns: N/A=#
 function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::Plot)
+  """
+    Simply uses draw to save the plot as a .png file
+  """
   #location is defaulted to the location of the file that calls the function
   currentLocation = Base.source_path()
 
@@ -149,15 +161,10 @@ function writeOutPlot(name::ASCIIString, plotType::ASCIIString, plotToWriteOut::
     cd(name)
   end
 
+  #I prefer png files but one could also use svg=scalable vector graphics
   #plotNameSVG = string(plotType, ".svg")
   plotNamePNG = string(plotType, ".png")
 
   #draw(SVG(plotNameSVG, 6inch, 4.5inch), plotToWriteOut)
   draw(PNG(plotNamePNG, 6inch, 4.5inch), plotToWriteOut)
 end
-
-function writeOutText(name::ASCIIString, writingToFile::LsqFit.LsqFitResult{Float64})
-
-
-end
-

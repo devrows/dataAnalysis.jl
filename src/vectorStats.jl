@@ -1,12 +1,12 @@
 """
 Physics Research Project
 Devin Rose
-All functions in this file will take a vector as an argument and do some analysis
+All functions in this file will take a vector as an argument and do some analysis.
 """
 
 function vectorMean(findMean::Vector)
   """
-  Find the mean of all values in the data
+    Find the mean of all values in the vector passed
   """
   #initialize variables
   n = length(findMean)
@@ -28,12 +28,11 @@ end
 
 function vectorStandardDeviation(findDeviation::Vector)
   """
-  Add description
+    Find the standard deviation of all values in the vector passed.
   """
+  #intialize required variables
   n = length(findDeviation)
-
   mean = vectorMean(findDeviation)
-
   standardDeviation = 0
 
   for j = 1:n
@@ -44,6 +43,3 @@ function vectorStandardDeviation(findDeviation::Vector)
 
   return standardDeviation
 end
-
-
-#function findAllMaxes
